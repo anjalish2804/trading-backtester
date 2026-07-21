@@ -130,8 +130,14 @@ with st.sidebar:
 @st.cache_data
 def fetch_data(ticker, start, end):
     df = yf.download(ticker, start=start, end=end, progress=False)
+
+    # Handle yfinance MultiIndex columns
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
+    # Keep only Close price
     df = df[['Close']]
-    df.columns = ['Close']
+
     return df
 
 
